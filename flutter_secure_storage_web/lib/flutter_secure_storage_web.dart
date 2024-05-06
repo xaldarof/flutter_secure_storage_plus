@@ -7,7 +7,6 @@ import 'dart:js_interop_unsafe' as js_interop;
 import 'dart:typed_data';
 
 import 'package:flutter_secure_storage_platform_interface/flutter_secure_storage_platform_interface.dart';
-import 'package:flutter_secure_storage_web/src/subtle.dart' as crypto;
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:web/web.dart' as web;
 
@@ -89,12 +88,12 @@ class FlutterSecureStorageWeb extends FlutterSecureStoragePlatform {
     return map;
   }
 
-  js_interop.JSObject _getAlgorithm(Uint8List iv) {
-    return {'name': 'AES-GCM', 'length': 256, 'iv': iv}.jsify()! as js_interop.JSObject;
+  js_interop.JSAny _getAlgorithm(Uint8List iv) {
+    return {'name': 'AES-GCM', 'length': 256, 'iv': iv}.jsify()!;
   }
 
   Future<web.CryptoKey> _getEncryptionKey(
-    js_interop.JSObject algorithm,
+    js_interop.JSAny algorithm,
     Map<String, String> options,
   ) async {
     late web.CryptoKey encryptionKey;
@@ -103,14 +102,14 @@ class FlutterSecureStorageWeb extends FlutterSecureStoragePlatform {
     if (web.window.localStorage.has(key)) {
       final jwk = base64Decode(web.window.localStorage[key]!);
 
-      encryptionKey = await crypto.importKey("raw", jwk.toJS, algorithm, false, ["encrypt".toJS, "decrypt".toJS].toJS).toDart;
+      encryptionKey = await web.window.crypto.subtle.importKey("raw", jwk.toJS, algorithm, false, ["encrypt".toJS, "decrypt".toJS].toJS).toDart;
     } else {
       //final crypto.getRandomValues(Uint8List(256));
 
-      encryptionKey = await crypto.generateKey(algorithm, true, ["encrypt".toJS, "decrypt".toJS].toJS).toDart;
+      encryptionKey = (await web.window.crypto.subtle.generateKey(algorithm, true, ["encrypt".toJS, "decrypt".toJS].toJS).toDart)! as web.CryptoKey;
 
-      final jsonWebKey = await crypto.exportKey("raw", encryptionKey).toDart;
-      web.window.localStorage[key] = base64Encode(jsonWebKey.toDart.asUint8List());
+      final jsonWebKey = await web.window.crypto.subtle.exportKey("raw", encryptionKey).toDart;
+      web.window.localStorage[key] = base64Encode((jsonWebKey! as js_interop.JSArrayBuffer).toDart.asUint8List());
     }
 
     return encryptionKey;
@@ -133,13 +132,13 @@ class FlutterSecureStorageWeb extends FlutterSecureStoragePlatform {
 
     final encryptionKey = await _getEncryptionKey(algorithm, options);
 
-    final encryptedContent = await crypto.encrypt(
+    final encryptedContent = (await web.window.crypto.subtle.encrypt(
       algorithm,
       encryptionKey,
       Uint8List.fromList(
         utf8.encode(value),
       ).toJS,
-    ).toDart;
+    ).toDart)! as js_interop.JSArrayBuffer;
 
     final encoded =
         "${base64Encode(iv)}.${base64Encode(encryptedContent.toDart.asUint8List())}";
@@ -164,13 +163,13 @@ class FlutterSecureStorageWeb extends FlutterSecureStoragePlatform {
 
     final value = base64Decode(parts[1]);
 
-    final decryptedContent = await crypto.decrypt(
+    final decryptedContent = await web.window.crypto.subtle.decrypt(
       _getAlgorithm(iv),
       decryptionKey,
       Uint8List.fromList(value).toJS,
     ).toDart;
 
-    final plainText = utf8.decode(decryptedContent.toDart.asUint8List());
+    final plainText = utf8.decode((decryptedContent! as js_interop.JSArrayBuffer).toDart.asUint8List());
 
     return plainText;
   }
