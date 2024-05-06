@@ -102,11 +102,11 @@ class FlutterSecureStorageWeb extends FlutterSecureStoragePlatform {
     if (web.window.localStorage.has(key)) {
       final jwk = base64Decode(web.window.localStorage[key]!);
 
-      encryptionKey = await web.window.crypto.subtle.importKey("raw", jwk.toJS, algorithm, false, ["encrypt".toJS, "decrypt".toJS].toJS).toDart;
+      encryptionKey = await web.window.crypto.subtle.importKey("raw", jwk.toJS, algorithm, false, ["encrypt", "decrypt"].toJS).toDart;
     } else {
       //final crypto.getRandomValues(Uint8List(256));
 
-      encryptionKey = (await web.window.crypto.subtle.generateKey(algorithm, true, ["encrypt".toJS, "decrypt".toJS].toJS).toDart)! as web.CryptoKey;
+      encryptionKey = (await web.window.crypto.subtle.generateKey(algorithm, true, ["encrypt", "decrypt"].toJS).toDart)! as web.CryptoKey;
 
       final jsonWebKey = await web.window.crypto.subtle.exportKey("raw", encryptionKey).toDart;
       web.window.localStorage[key] = base64Encode((jsonWebKey! as js_interop.JSArrayBuffer).toDart.asUint8List());
@@ -178,4 +178,10 @@ class FlutterSecureStorageWeb extends FlutterSecureStoragePlatform {
 
   @override
   Stream<bool> get onCupertinoProtectedDataAvailabilityChanged => const Stream.empty();
+}
+
+extension on List<String> {
+  js_interop.JSArray<js_interop.JSString> get toJS => [
+      ...map((e) => e.toJS),
+    ].toJS;
 }
