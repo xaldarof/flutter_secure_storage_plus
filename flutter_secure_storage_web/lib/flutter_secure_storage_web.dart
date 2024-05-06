@@ -187,9 +187,9 @@ class FlutterSecureStorageWeb extends FlutterSecureStoragePlatform {
   }
 
   @override
-  Future<bool> isCupertinoProtectedDataAvailable() => Future.value(true);
+  Future<bool> isCupertinoProtectedDataAvailable() => Future.value(false);
 
   @override
   Stream<bool> get onCupertinoProtectedDataAvailabilityChanged =>
-      Stream.value(true);
+      const Stream.empty();
 }
