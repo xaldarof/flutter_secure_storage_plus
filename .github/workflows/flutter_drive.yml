@@ -16,7 +16,7 @@ jobs:
             echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
             echo "$HOME/AppData/Local/Pub/Cache/bin" >> $GITHUB_PATH
         - name: Initialize workspace through melos
-          run: melos boostrap
+          run: melos bootstrap
         - name: "Run Flutter Driver tests API 18"
           uses: reactivecircus/android-emulator-runner@v2
           with:

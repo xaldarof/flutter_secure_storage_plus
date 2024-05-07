@@ -21,7 +21,7 @@ jobs:
           echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
           echo "$HOME/AppData/Local/Pub/Cache/bin" >> $GITHUB_PATH
       - name: Initialize workspace through melos
-        run: melos boostrap
+        run: melos bootstrap
       - name: Linter
         run: melos analyze
   formatting:
@@ -42,7 +42,6 @@ jobs:
           echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
           echo "$HOME/AppData/Local/Pub/Cache/bin" >> $GITHUB_PATH
       - name: Initialize workspace through melos
-        run: melos boostrap
+        run: melos bootstrap
       - name: Format
         run: melos format --output none --set-exit-if-changed
-        working-directory: ./flutter_secure_storage
