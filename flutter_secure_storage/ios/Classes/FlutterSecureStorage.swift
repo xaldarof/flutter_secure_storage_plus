@@ -109,6 +109,11 @@ class FlutterSecureStorage{
             keychainQuery as CFDictionary,
             &ref
         )
+
+        // Return nil if the key is not found
+        if (status == errSecItemNotFound) {
+            return FlutterSecureStorageResponse(status: errSecSuccess, value: nil)
+        }
         
         var value: String? = nil
         
