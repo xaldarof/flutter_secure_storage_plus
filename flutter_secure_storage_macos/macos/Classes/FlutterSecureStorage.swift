@@ -40,6 +40,9 @@ class FlutterSecureStorage{
             kSecClass : kSecClassGenericPassword,
             kSecAttrAccessible : parseAccessibleAttr(accessibility: accessibility),
         ]
+        if #available(macOS 10.15, *) {
+            keychainQuery[kSecUseDataProtectionKeychain] = true
+        }
         
         if (key != nil) {
             keychainQuery[kSecAttrAccount] = key
