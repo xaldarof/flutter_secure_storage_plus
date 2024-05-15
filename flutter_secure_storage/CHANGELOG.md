@@ -1,3 +1,12 @@
+## 9.2.0
+New Features:
+* [iOS, macOS] Reintroduced isProtectedDataAvailable.
+* Listener functionality via `FlutterSecureStorage().registerListener()`
+
+Bugs Fixed:
+* [iOS] Return nil on iOS read if key is not found
+* [macOS] Also set kSecUseDataProtectionKeychain on read for macos.
+ 
 ## 9.1.1
 Reverts new feature because of breaking changes.
 * [iOS, macOS] Added isProtectedDataAvailable, A boolean value that indicates whether content protection is active.
