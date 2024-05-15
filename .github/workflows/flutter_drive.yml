@@ -22,10 +22,10 @@ jobs:
             echo "$HOME/AppData/Local/Pub/Cache/bin" >> $GITHUB_PATH
         - name: Initialize workspace through melos
           run: melos bootstrap
-        - name: "Run Flutter Driver tests API 19"
+        - name: "Run Flutter Driver tests API 21"
           uses: reactivecircus/android-emulator-runner@v2
           with:
-            api-level: 19
+            api-level: 21
             target: default
             arch: x86
             script: "cd example && flutter drive --target=test_driver/app.dart"
