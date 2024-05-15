@@ -9,6 +9,11 @@ void main() {
     // Connect to the Flutter driver before running any tests.
     setUpAll(() async {
       driver = await FlutterDriver.connect();
+
+      // Workaround from
+      // https://github.com/flutter/flutter/issues/41029#issuecomment-544348116
+      await Future.delayed(const Duration(seconds: 10));
+
       pageObject = HomePageObject(driver);
 
       await pageObject.deleteAll();
