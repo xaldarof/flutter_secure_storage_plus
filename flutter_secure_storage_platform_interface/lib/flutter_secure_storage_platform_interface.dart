@@ -1,6 +1,6 @@
 library flutter_secure_storage_platform_interface;
 
-// import 'dart:io';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -30,10 +30,6 @@ abstract class FlutterSecureStoragePlatform extends PlatformInterface {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
   }
-
-  // Stream<bool> get onCupertinoProtectedDataAvailabilityChanged;
-
-  // Future<bool> isCupertinoProtectedDataAvailable();
 
   Future<void> write({
     required String key,

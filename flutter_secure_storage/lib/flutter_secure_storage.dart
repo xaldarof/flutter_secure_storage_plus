@@ -326,21 +326,27 @@ class FlutterSecureStorage {
     }
   }
 
-  // /// iOS only feature
-  // ///
-  // /// On all unsupported platforms returns an stream emitting `true` once
-  // Stream<bool> get onCupertinoProtectedDataAvailabilityChanged =>
-  //     _platform.onCupertinoProtectedDataAvailabilityChanged;
-  //
-  // /// iOS and macOS only feature.
-  // ///
-  // /// On macOS this is only avaible on macOS 12 or newer. On older versions always returns true.
-  // /// On all unsupported platforms returns true
-  // ///
-  // /// iOS: https://developer.apple.com/documentation/uikit/uiapplication/1622925-isprotecteddataavailable
-  // /// macOS: https://developer.apple.com/documentation/appkit/nsapplication/3752992-isprotecteddataavailable
-  // Future<bool> isCupertinoProtectedDataAvailable() =>
-  //     _platform.isCupertinoProtectedDataAvailable();
+  /// iOS only feature
+  ///
+  /// On all unsupported platforms returns null
+  Stream<bool>? get onCupertinoProtectedDataAvailabilityChanged =>
+      _platform is MethodChannelFlutterSecureStorage
+          ? (_platform as MethodChannelFlutterSecureStorage)
+              .onCupertinoProtectedDataAvailabilityChanged
+          : null;
+
+  /// iOS and macOS only feature.
+  ///
+  /// On macOS this is only available on macOS 12 or newer. On older versions always returns true.
+  /// On all unsupported platforms returns null
+  ///
+  /// iOS: https://developer.apple.com/documentation/uikit/uiapplication/1622925-isprotecteddataavailable
+  /// macOS: https://developer.apple.com/documentation/appkit/nsapplication/3752992-isprotecteddataavailable
+  Future<bool?> isCupertinoProtectedDataAvailable() async =>
+      _platform is MethodChannelFlutterSecureStorage
+          ? (_platform as MethodChannelFlutterSecureStorage)
+              .isCupertinoProtectedDataAvailable()
+          : null;
 
   /// Initializes the shared preferences with mock values for testing.
   @visibleForTesting
