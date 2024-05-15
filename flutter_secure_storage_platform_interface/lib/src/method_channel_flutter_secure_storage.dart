@@ -13,7 +13,7 @@ class MethodChannelFlutterSecureStorage extends FlutterSecureStoragePlatform {
       .map((event) => event as bool);
 
   Future<bool?> isCupertinoProtectedDataAvailable() async {
-    if (kIsWeb || !Platform.isIOS) {
+    if (kIsWeb || !(Platform.isIOS || Platform.isMacOS)) {
       return null;
     }
     return (await _channel.invokeMethod<bool>('isProtectedDataAvailable')) ??

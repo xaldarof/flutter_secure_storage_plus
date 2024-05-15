@@ -31,10 +31,6 @@ abstract class FlutterSecureStoragePlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  // Stream<bool> get onCupertinoProtectedDataAvailabilityChanged;
-
-  // Future<bool> isCupertinoProtectedDataAvailable();
-
   Future<void> write({
     required String key,
     required String value,
