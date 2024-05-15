@@ -17,8 +17,7 @@ class ItemsWidget extends StatefulWidget {
   ItemsWidgetState createState() => ItemsWidgetState();
 }
 
-// enum _Actions { deleteAll, isProtectedDataAvailable }
-enum _Actions { deleteAll }
+enum _Actions { deleteAll, isProtectedDataAvailable }
 
 enum _ItemActions { delete, edit, containsKey, read }
 
@@ -57,9 +56,16 @@ class ItemsWidgetState extends State<ItemsWidget> {
     _readAll();
   }
 
-  // Future<void> _isProtectedDataAvailable() async {
-  //   await _storage.isCupertinoProtectedDataAvailable();
-  // }
+  Future<void> _isProtectedDataAvailable() async {
+    final scaffold = ScaffoldMessenger.of(context);
+    final result = await _storage.isCupertinoProtectedDataAvailable();
+    scaffold.showSnackBar(
+      SnackBar(
+        content: Text('Protected data available: $result'),
+        backgroundColor: result != null && result ? Colors.green : Colors.red,
+      ),
+    );
+  }
 
   Future<void> _addNewItem() async {
     final String key = _randomValue();
@@ -104,9 +110,9 @@ class ItemsWidgetState extends State<ItemsWidget> {
                   case _Actions.deleteAll:
                     _deleteAll();
                     break;
-                  // case _Actions.isProtectedDataAvailable:
-                  //   _isProtectedDataAvailable();
-                  //   break;
+                  case _Actions.isProtectedDataAvailable:
+                    _isProtectedDataAvailable();
+                    break;
                 }
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<_Actions>>[
@@ -115,11 +121,11 @@ class ItemsWidgetState extends State<ItemsWidget> {
                   value: _Actions.deleteAll,
                   child: Text('Delete all'),
                 ),
-                // const PopupMenuItem(
-                //   key: Key('is_protected_data_available'),
-                //   value: _Actions.isProtectedDataAvailable,
-                //   child: Text('IsProtectedDataAvailable'),
-                // ),
+                const PopupMenuItem(
+                  key: Key('is_protected_data_available'),
+                  value: _Actions.isProtectedDataAvailable,
+                  child: Text('IsProtectedDataAvailable'),
+                ),
               ],
             ),
           ],
