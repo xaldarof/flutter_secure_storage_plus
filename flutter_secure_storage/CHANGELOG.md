@@ -1,3 +1,6 @@
+## 9.2.1
+* Fix async race condition bug in storage operations.
+
 ## 9.2.0
 New Features:
 * [iOS, macOS] Reintroduced isProtectedDataAvailable.
