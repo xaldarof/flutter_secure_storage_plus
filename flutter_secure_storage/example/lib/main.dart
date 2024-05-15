@@ -17,7 +17,8 @@ class ItemsWidget extends StatefulWidget {
   ItemsWidgetState createState() => ItemsWidgetState();
 }
 
-enum _Actions { deleteAll, isProtectedDataAvailable }
+// enum _Actions { deleteAll, isProtectedDataAvailable }
+enum _Actions { deleteAll }
 
 enum _ItemActions { delete, edit, containsKey, read }
 
@@ -103,9 +104,9 @@ class ItemsWidgetState extends State<ItemsWidget> {
                   case _Actions.deleteAll:
                     _deleteAll();
                     break;
-                  case _Actions.isProtectedDataAvailable:
-                    // _isProtectedDataAvailable();
-                    break;
+                  // case _Actions.isProtectedDataAvailable:
+                  //   _isProtectedDataAvailable();
+                  //   break;
                 }
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<_Actions>>[
@@ -114,11 +115,11 @@ class ItemsWidgetState extends State<ItemsWidget> {
                   value: _Actions.deleteAll,
                   child: Text('Delete all'),
                 ),
-                const PopupMenuItem(
-                  key: Key('is_protected_data_available'),
-                  value: _Actions.isProtectedDataAvailable,
-                  child: Text('IsProtectedDataAvailable'),
-                ),
+                // const PopupMenuItem(
+                //   key: Key('is_protected_data_available'),
+                //   value: _Actions.isProtectedDataAvailable,
+                //   child: Text('IsProtectedDataAvailable'),
+                // ),
               ],
             ),
           ],
