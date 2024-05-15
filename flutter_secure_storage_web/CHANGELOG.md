@@ -1,6 +1,6 @@
-## 2.0.0
+## 2.0.0-beta.1
 - Migrate away from `html` to `web`
-- Allow newer `js` versions to be used with this package
+- Remove `js` in favor of using js-interop
 
 ## 1.2.1
 Reverts onCupertinoProtectedDataAvailabilityChanged and isCupertinoProtectedDataAvailable.
