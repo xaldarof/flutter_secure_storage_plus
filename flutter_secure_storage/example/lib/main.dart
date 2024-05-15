@@ -56,9 +56,9 @@ class ItemsWidgetState extends State<ItemsWidget> {
     _readAll();
   }
 
-  Future<void> _isProtectedDataAvailable() async {
-    await _storage.isCupertinoProtectedDataAvailable();
-  }
+  // Future<void> _isProtectedDataAvailable() async {
+  //   await _storage.isCupertinoProtectedDataAvailable();
+  // }
 
   Future<void> _addNewItem() async {
     final String key = _randomValue();
@@ -104,7 +104,7 @@ class ItemsWidgetState extends State<ItemsWidget> {
                     _deleteAll();
                     break;
                   case _Actions.isProtectedDataAvailable:
-                    _isProtectedDataAvailable();
+                    // _isProtectedDataAvailable();
                     break;
                 }
               },
