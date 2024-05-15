@@ -1,3 +1,6 @@
+## 1.1.2
+Adds onCupertinoProtectedDataAvailabilityChanged and isCupertinoProtectedDataAvailable via MethodChannelFlutterSecureStorage to prevent breaking changes.
+
 ## 1.1.1
 Reverts onCupertinoProtectedDataAvailabilityChanged and isCupertinoProtectedDataAvailable.
 
