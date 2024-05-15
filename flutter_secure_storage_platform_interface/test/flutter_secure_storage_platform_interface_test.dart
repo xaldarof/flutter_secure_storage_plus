@@ -173,10 +173,10 @@ void main() {
       );
     });
 
-    test('isProtectedDataAvailable', () async {
-      final result = await storage.isCupertinoProtectedDataAvailable();
-
-      expect(result, true);
-    });
+    // test('isProtectedDataAvailable', () async {
+    //   final result = await storage.isCupertinoProtectedDataAvailable();
+    //
+    //   expect(result, true);
+    // });
   });
 }

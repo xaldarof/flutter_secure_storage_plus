@@ -1,3 +1,6 @@
+## 1.1.1
+Reverts onCupertinoProtectedDataAvailabilityChanged and isCupertinoProtectedDataAvailable.
+
 ## 1.1.0
 Adds onCupertinoProtectedDataAvailabilityChanged and isCupertinoProtectedDataAvailable.
 

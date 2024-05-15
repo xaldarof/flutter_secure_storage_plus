@@ -51,10 +51,10 @@ class ExtendsFlutterSecureStoragePlatform extends FlutterSecureStoragePlatform {
   }) =>
       Future<void>.value();
 
-  @override
-  Future<bool> isCupertinoProtectedDataAvailable() => Future.value(true);
-
-  @override
-  Stream<bool> get onCupertinoProtectedDataAvailabilityChanged =>
-      Stream.value(true);
+  // @override
+  // Future<bool> isCupertinoProtectedDataAvailable() => Future.value(true);
+  //
+  // @override
+  // Stream<bool> get onCupertinoProtectedDataAvailabilityChanged =>
+  //     Stream.value(true);
 }

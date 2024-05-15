@@ -1,3 +1,6 @@
+## 3.1.2
+Reverts onCupertinoProtectedDataAvailabilityChanged and isCupertinoProtectedDataAvailable.
+
 ## 3.1.1
 Updated flutter_secure_storage_platform_interface to latest version.
 
