@@ -1,5 +1,6 @@
 ## 9.2.1
 * Fix async race condition bug in storage operations.
+* [macOS] Return nil on macOS if key is not found
 
 ## 9.2.0
 New Features:
