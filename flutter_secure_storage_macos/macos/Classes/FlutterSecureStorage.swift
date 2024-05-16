@@ -114,6 +114,11 @@ class FlutterSecureStorage{
             &ref
         )
         
+        // Return nil if the key is not found
+        if (status == errSecItemNotFound) {
+            return FlutterSecureStorageResponse(status: errSecSuccess, value: nil)
+        }
+        
         var value: String? = nil
         
         if (status == noErr) {
@@ -133,6 +138,11 @@ class FlutterSecureStorage{
     internal func delete(key: String, groupId: String?, accountName: String?, synchronizable: Bool?, accessibility: String?) -> FlutterSecureStorageResponse {
         let keychainQuery = baseQuery(key: key, groupId: groupId, accountName: accountName, synchronizable: synchronizable, accessibility: accessibility, returnData: true)
         let status = SecItemDelete(keychainQuery as CFDictionary)
+        
+        // Return nil if the key is not found
+        if (status == errSecItemNotFound) {
+            return FlutterSecureStorageResponse(status: errSecSuccess, value: nil)
+        }
         
         return FlutterSecureStorageResponse(status: status, value: nil)
     }
