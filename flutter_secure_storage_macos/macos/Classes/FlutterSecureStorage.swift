@@ -127,8 +127,8 @@ class FlutterSecureStorage{
         return FlutterSecureStorageResponse(status: status, value: value)
     }
     
-    internal func deleteAll(groupId: String?, accountName: String?, synchronizable: Bool?) -> FlutterSecureStorageResponse {
-        let keychainQuery = baseQuery(key: nil, groupId: groupId, accountName: accountName, synchronizable: synchronizable, accessibility: nil, returnData: nil)
+    internal func deleteAll(groupId: String?, accountName: String?, synchronizable: Bool?, accessibility: String?) -> FlutterSecureStorageResponse {
+        let keychainQuery = baseQuery(key: nil, groupId: groupId, accountName: accountName, synchronizable: synchronizable, accessibility: accessibility, returnData: nil)
         let status = SecItemDelete(keychainQuery as CFDictionary)
         
         if (status == errSecItemNotFound) {
