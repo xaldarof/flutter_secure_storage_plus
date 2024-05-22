@@ -55,6 +55,7 @@ jobs:
       - uses: futureware-tech/simulator-action@v3
         with:
           os: iOS
+          os_version: 17.5
           model: 'iPhone 15'
       - name: Run Flutter Driver tests
         working-directory: example
