@@ -39,7 +39,7 @@ jobs:
           script: "cd example && flutter drive --target=test_driver/app.dart"
           working-directory: ./flutter_secure_storage
   drive_ios:
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -55,8 +55,7 @@ jobs:
       - uses: futureware-tech/simulator-action@v3
         with:
           os: iOS
-          os_version: 16.4
-          model: 'iPhone 14'
+          model: 'iPhone 15'
       - name: Run Flutter Driver tests
         working-directory: example
         run: flutter drive --target=test_driver/app.dart
