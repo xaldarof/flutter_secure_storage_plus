@@ -1,6 +1,5 @@
 import java.util.Properties
 import java.nio.file.Files
-import java.util.Locale
 import java.nio.file.Path
 
 plugins {
