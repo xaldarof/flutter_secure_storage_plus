@@ -1,8 +1,17 @@
 name: integration test
-on: [pull_request]
+on: [ pull_request ]
 jobs:
   drive_android:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - api-level: 21
+            target: default
+            arch: x86
+          - api-level: 34
+            target: google_apis
+            arch: x86_64
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -10,6 +19,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: 'gradle'
       - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -22,29 +32,21 @@ jobs:
           echo "$HOME/AppData/Local/Pub/Cache/bin" >> $GITHUB_PATH
       - name: Initialize workspace through melos
         run: melos bootstrap
-      - name: "Run Flutter Driver tests API 21"
+      - name: Run Flutter Driver tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 21
-          target: default
-          arch: x86
-          script: "cd example && flutter drive --target=test_driver/app.dart"
-          working-directory: ./flutter_secure_storage
-      - name: "Run Flutter Driver tests API 34"
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 34
-          target: google_apis
-          arch: x86_64
-          script: "cd example && flutter drive --target=test_driver/app.dart"
-          working-directory: ./flutter_secure_storage
+          api-level: ${{ matrix.api-level }}
+          target: ${{ matrix.target }}
+          arch: ${{ matrix.arch }}
+          script: flutter drive --target=test_driver/app.dart
+          working-directory: flutter_secure_storage/example
   drive_ios:
-    runs-on: macos-14
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          channel: "stable"
       - name: Install melos
         run: |
           flutter pub global activate melos
@@ -56,7 +58,7 @@ jobs:
         with:
           os: iOS
           os_version: 17.5
-          model: 'iPhone 15'
+          model: "iPhone 15"
       - name: Run Flutter Driver tests
         working-directory: flutter_secure_storage/example
         run: flutter drive --target=test_driver/app.dart
