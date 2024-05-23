@@ -1,7 +1,16 @@
 name: integration test
-on: [ pull_request ]
+
+on:
+  - pull_request
+defaults:
+  run:
+    shell: bash
+env:
+  PUB_ENVIRONMENT: bot.github
+
 jobs:
   drive_android:
+    name: Android
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -15,11 +24,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
       - uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: 'gradle'
+          distribution: "temurin"
+          java-version: "17"
+          cache: "gradle"
       - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -41,6 +52,7 @@ jobs:
           script: flutter drive --target=test_driver/app.dart
           working-directory: flutter_secure_storage/example
   drive_ios:
+    name: iOS
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
