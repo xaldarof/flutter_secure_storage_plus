@@ -95,5 +95,5 @@ jobs:
         run: |
           set -e
           chromedriver --port=4444 & sleep 5
-          flutter drive --target=test_driver/app.dart -d chrome --browser-name=chrome
+          flutter drive --target=test_driver/app.dart -d web-server --profile --browser-name=chrome
         working-directory: flutter_secure_storage/example
