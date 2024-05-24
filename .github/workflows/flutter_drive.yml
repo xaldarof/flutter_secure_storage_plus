@@ -77,6 +77,7 @@ jobs:
   drive_web:
     name: Web
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -93,7 +94,6 @@ jobs:
       - name: Run Flutter Driver tests
         run: |
           set -e
-          chromedriver --port=4444
-          sleep 5
+          chromedriver --port=4444 & sleep 5
           flutter drive --target=test_driver/app.dart -d chrome --browser-name=chrome
         working-directory: flutter_secure_storage/example
