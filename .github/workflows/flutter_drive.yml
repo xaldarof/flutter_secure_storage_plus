@@ -12,6 +12,7 @@ jobs:
   drive_android:
     name: Android
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       matrix:
         include:
@@ -25,7 +26,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          channel: "stable"
+          channel: stable
+          flutter-version: 3.22.x
       - uses: actions/setup-java@v4
         with:
           distribution: "temurin"
@@ -43,22 +45,24 @@ jobs:
           echo "$HOME/AppData/Local/Pub/Cache/bin" >> $GITHUB_PATH
       - name: Initialize workspace through melos
         run: melos bootstrap
-      - name: Run Flutter Driver tests
+      - name: Run Flutter Integration tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
           target: ${{ matrix.target }}
           arch: ${{ matrix.arch }}
-          script: flutter drive --target=test_driver/app.dart
+          script: flutter test integration_test
           working-directory: flutter_secure_storage/example
   drive_ios:
     name: iOS
     runs-on: macos-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          channel: "stable"
+          channel: stable
+          flutter-version: 3.22.x
       - name: Install melos
         run: |
           flutter pub global activate melos
@@ -71,18 +75,19 @@ jobs:
           os: iOS
           os_version: 17.5
           model: "iPhone 15"
-      - name: Run Flutter Driver tests
+      - name: Run Flutter Integration tests
         working-directory: flutter_secure_storage/example
-        run: flutter drive --target=test_driver/app.dart
+        run: flutter test integration_test
   drive_web:
     name: Web
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          channel: "stable"
+          channel: stable
+          flutter-version: 3.22.x
       - name: Install melos
         run: |
           flutter pub global activate melos

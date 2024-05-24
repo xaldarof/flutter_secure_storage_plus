@@ -1,6 +1,7 @@
 import 'package:flutter_driver/flutter_driver.dart';
 import 'package:test/test.dart';
 
+@Deprecated('Web devices are not supported for integration tests yet.')
 void main() {
   group('Secure Storage Example', () {
     late HomePageObject pageObject;
