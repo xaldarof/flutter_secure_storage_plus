@@ -88,7 +88,9 @@ class HomePageObject {
   }
 
   void rowHasTitle(String title, int index) {
-    expect(find.text(title), findsOneWidget);
+    final Finder titleRow = find.byKey(Key('title_row_$index'));
+    expect(titleRow, findsOneWidget);
+    expect((titleRow.evaluate().single.widget as Text).data, equals(title));
   }
 
   void hasRow(int index) {
