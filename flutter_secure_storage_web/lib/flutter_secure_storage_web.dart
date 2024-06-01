@@ -13,6 +13,8 @@ import 'package:web/web.dart' as web;
 /// Web implementation of FlutterSecureStorage
 class FlutterSecureStorageWeb extends FlutterSecureStoragePlatform {
   static const _publicKey = 'publicKey';
+  static const _wrapKey = 'wrapKey';
+  static const _wrapKeyIv = 'wrapKeyIv';
 
   /// Registrar for FlutterSecureStorageWeb
   static void registerWith(Registrar registrar) {
@@ -111,34 +113,84 @@ class FlutterSecureStorageWeb extends FlutterSecureStoragePlatform {
   ) async {
     late web.CryptoKey encryptionKey;
     final key = options[_publicKey]!;
+    final useWrapKey = options[_wrapKey]?.isNotEmpty ?? false;
 
     if (web.window.localStorage.has(key)) {
       final jwk = base64Decode(web.window.localStorage[key]!);
 
-      encryptionKey = await web.window.crypto.subtle
-          .importKey(
-            "raw",
-            jwk.toJS,
-            algorithm,
-            false,
-            ["encrypt", "decrypt"].toJS,
-          )
-          .toDart;
+      if (useWrapKey) {
+        final unwrappingKey = await _getWrapKey(options);
+        final unwrapAlgorithm = _getWrapAlgorithm(options);
+        encryptionKey = await web.window.crypto.subtle
+            .unwrapKey(
+              "raw",
+              jwk.toJS,
+              unwrappingKey,
+              unwrapAlgorithm,
+              algorithm,
+              false,
+              ["encrypt", "decrypt"].toJS,
+            )
+            .toDart;
+      } else {
+        encryptionKey = await web.window.crypto.subtle
+            .importKey(
+              'raw',
+              jwk.toJS,
+              algorithm,
+              false,
+              ['encrypt', 'decrypt'].toJS,
+            )
+            .toDart;
+      }
     } else {
-      //final crypto.getRandomValues(Uint8List(256));
-
       encryptionKey = (await web.window.crypto.subtle
           .generateKey(algorithm, true, ["encrypt", "decrypt"].toJS)
           .toDart)! as web.CryptoKey;
 
-      final jsonWebKey =
-          await web.window.crypto.subtle.exportKey("raw", encryptionKey).toDart;
+      final js_interop.JSAny? jsonWebKey;
+      if (useWrapKey) {
+        final wrappingKey = await _getWrapKey(options);
+        final wrapAlgorithm = _getWrapAlgorithm(options);
+        jsonWebKey = await web.window.crypto.subtle
+            .wrapKey(
+              "raw",
+              encryptionKey,
+              wrappingKey,
+              wrapAlgorithm,
+            )
+            .toDart;
+      } else {
+        jsonWebKey = await web.window.crypto.subtle
+            .exportKey("raw", encryptionKey)
+            .toDart;
+      }
+
       web.window.localStorage[key] = base64Encode(
         (jsonWebKey! as js_interop.JSArrayBuffer).toDart.asUint8List(),
       );
     }
 
     return encryptionKey;
+  }
+
+  Future<web.CryptoKey> _getWrapKey(Map<String, String> options) async {
+    final wrapKey = base64Decode(options[_wrapKey]!);
+    final algorithm = _getWrapAlgorithm(options);
+    return await web.window.crypto.subtle
+        .importKey(
+          "raw",
+          wrapKey.toJS,
+          algorithm,
+          true,
+          ["wrapKey", "unwrapKey"].toJS,
+        )
+        .toDart;
+  }
+
+  js_interop.JSAny _getWrapAlgorithm(Map<String, String> options) {
+    final iv = base64Decode(options[_wrapKeyIv]!);
+    return _getAlgorithm(iv);
   }
 
   /// Encrypts and saves the [key] with the given [value].
