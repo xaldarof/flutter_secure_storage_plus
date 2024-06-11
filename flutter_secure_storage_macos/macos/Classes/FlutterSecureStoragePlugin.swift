@@ -178,8 +178,8 @@ public class FlutterSecureStoragePlugin: NSObject, FlutterPlugin {
     struct FlutterSecureStorageRequest {
         var accountName: String?
         var groupId: String?
-        var synchronizable: Bool?
-        var useDataProtectionKeyChain: Bool?
+        var synchronizable: Bool
+        var useDataProtectionKeyChain: Bool
         var accessibility: String?
         var key: String?
         var value: String?
