@@ -7,12 +7,12 @@
 
 import Foundation
 
-class FlutterSecureStorage{
+class FlutterSecureStorage {
     private func parseAccessibleAttr(accessibility: String?) -> CFString {
         guard let accessibility = accessibility else {
             return kSecAttrAccessibleWhenUnlocked
         }
-        
+
         switch accessibility {
         case "passcode":
             return kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly
@@ -31,35 +31,39 @@ class FlutterSecureStorage{
 
     private func baseQuery(key: String?, groupId: String?, accountName: String?, synchronizable: Bool?, accessibility: String?, returnData: Bool?) -> Dictionary<CFString, Any> {
         var keychainQuery: [CFString: Any] = [
-            kSecClass : kSecClassGenericPassword,
-            kSecAttrAccessible : parseAccessibleAttr(accessibility: accessibility),
+            kSecClass : kSecClassGenericPassword
         ]
-        
+
+        if (accessibility != nil) {
+            keychainQuery[kSecAttrAccessible] = parseAccessibleAttr(accessibility: accessibility)
+        }
+
         if (key != nil) {
             keychainQuery[kSecAttrAccount] = key
         }
-        
+
         if (groupId != nil) {
             keychainQuery[kSecAttrAccessGroup] = groupId
         }
-        
+
         if (accountName != nil) {
             keychainQuery[kSecAttrService] = accountName
         }
-        
+
         if (synchronizable != nil) {
             keychainQuery[kSecAttrSynchronizable] = synchronizable
         }
-        
+
         if (returnData != nil) {
             keychainQuery[kSecReturnData] = returnData
         }
         return keychainQuery
     }
-    
-    internal func containsKey(key: String, groupId: String?, accountName: String?, synchronizable: Bool?, accessibility: String?) -> Result<Bool, OSSecError> {  
-        let keychainQuery = baseQuery(key: key, groupId: groupId, accountName: accountName, synchronizable: synchronizable, accessibility: accessibility, returnData: false)
-        
+
+    internal func containsKey(key: String, groupId: String?, accountName: String?) -> Result<Bool, OSSecError> {
+        // The accessibility and synchronisable parameters have no influence on uniqueness.
+        let keychainQuery = baseQuery(key: key, groupId: groupId, accountName: accountName, synchronizable: nil, accessibility: nil, returnData: false)
+
         let status = SecItemCopyMatching(keychainQuery as CFDictionary, nil)
         switch status {
         case errSecSuccess:
@@ -70,26 +74,26 @@ class FlutterSecureStorage{
             return .failure(OSSecError(status: status))
         }
     }
-    
+
     internal func readAll(groupId: String?, accountName: String?, synchronizable: Bool?, accessibility: String?) -> FlutterSecureStorageResponse {
         var keychainQuery = baseQuery(key: nil, groupId: groupId, accountName: accountName, synchronizable: synchronizable, accessibility: accessibility, returnData: true)
-        
+
         keychainQuery[kSecMatchLimit] = kSecMatchLimitAll
         keychainQuery[kSecReturnAttributes] = true
-        
+
         var ref: AnyObject?
         let status = SecItemCopyMatching(
             keychainQuery as CFDictionary,
             &ref
         )
-        
+
         if (status == errSecItemNotFound) {
             // readAll() returns all elements, so return nil if the items does not exist
             return FlutterSecureStorageResponse(status: errSecSuccess, value: nil)
         }
 
         var results: [String: String] = [:]
-        
+
         if (status == noErr) {
             (ref as! NSArray).forEach { item in
                 let key: String = (item as! NSDictionary)[kSecAttrAccount] as! String
@@ -97,13 +101,13 @@ class FlutterSecureStorage{
                 results[key] = value
             }
         }
-        
+
         return FlutterSecureStorageResponse(status: status, value: results)
     }
-    
+
     internal func read(key: String, groupId: String?, accountName: String?, synchronizable: Bool?, accessibility: String?) -> FlutterSecureStorageResponse {
         let keychainQuery = baseQuery(key: key, groupId: groupId, accountName: accountName, synchronizable: synchronizable, accessibility: accessibility, returnData: true)
-        
+
         var ref: AnyObject?
         let status = SecItemCopyMatching(
             keychainQuery as CFDictionary,
@@ -114,73 +118,80 @@ class FlutterSecureStorage{
         if (status == errSecItemNotFound) {
             return FlutterSecureStorageResponse(status: errSecSuccess, value: nil)
         }
-        
+
         var value: String? = nil
-        
+
         if (status == noErr) {
             value = String(data: ref as! Data, encoding: .utf8)
         }
 
         return FlutterSecureStorageResponse(status: status, value: value)
     }
-    
-    internal func deleteAll(groupId: String?, accountName: String?, synchronizable: Bool?, accessibility: String?) -> FlutterSecureStorageResponse {
-        let keychainQuery = baseQuery(key: nil, groupId: groupId, accountName: accountName, synchronizable: synchronizable, accessibility: accessibility, returnData: nil)
+
+    internal func deleteAll(groupId: String?, accountName: String?) -> FlutterSecureStorageResponse {
+        let keychainQuery = baseQuery(key: nil, groupId: groupId, accountName: accountName, synchronizable: nil, accessibility: nil, returnData: nil)
         let status = SecItemDelete(keychainQuery as CFDictionary)
-        
+
         if (status == errSecItemNotFound) {
             // deleteAll() deletes all items, so return nil if the items does not exist
             return FlutterSecureStorageResponse(status: errSecSuccess, value: nil)
         }
-        
+
         return FlutterSecureStorageResponse(status: status, value: nil)
     }
-    
-    internal func delete(key: String, groupId: String?, accountName: String?, synchronizable: Bool?, accessibility: String?) -> FlutterSecureStorageResponse {
-        let keychainQuery = baseQuery(key: key, groupId: groupId, accountName: accountName, synchronizable: synchronizable, accessibility: accessibility, returnData: true)
+
+    internal func delete(key: String, groupId: String?, accountName: String?) -> FlutterSecureStorageResponse {
+        let keychainQuery = baseQuery(key: key, groupId: groupId, accountName: accountName, synchronizable: nil, accessibility: nil, returnData: true)
         let status = SecItemDelete(keychainQuery as CFDictionary)
 
         // Return nil if the key is not found
         if (status == errSecItemNotFound) {
             return FlutterSecureStorageResponse(status: errSecSuccess, value: nil)
         }
-        
+
         return FlutterSecureStorageResponse(status: status, value: nil)
     }
-    
-    internal func write(key: String, value: String, groupId: String?, accountName: String?, synchronizable: Bool?, accessibility: String?) -> FlutterSecureStorageResponse {        
+
+    internal func write(key: String, value: String, groupId: String?, accountName: String?, synchronizable: Bool?, accessibility: String?) -> FlutterSecureStorageResponse {
         var keyExists: Bool = false
 
-    	switch containsKey(key: key, groupId: groupId, accountName: accountName, synchronizable: synchronizable, accessibility: accessibility) {
-        case .success(let exists):
-            keyExists = exists
-            break;
-        case .failure(let err):
-            return FlutterSecureStorageResponse(status: err.status, value: nil)
+        // Check if the key exists but without accessibility and synchronisable.
+        // These parameters have no effect on the uniqueness of the key.
+    	switch containsKey(key: key, groupId: groupId, accountName: accountName) {
+            case .success(let exists):
+                keyExists = exists
+                break;
+            case .failure(let err):
+                return FlutterSecureStorageResponse(status: err.status, value: nil)
         }
 
         var keychainQuery = baseQuery(key: key, groupId: groupId, accountName: accountName, synchronizable: synchronizable, accessibility: accessibility, returnData: nil)
 
         if (keyExists) {
-            let attrAccessible = parseAccessibleAttr(accessibility: accessibility)
-            
+            // Entry exists, try to update it. Change of kSecAttrAccessible not possible via update.
             let update: [CFString: Any?] = [
                 kSecValueData: value.data(using: String.Encoding.utf8),
-                kSecAttrAccessible: attrAccessible,
                 kSecAttrSynchronizable: synchronizable
             ]
-            
-            let status = SecItemUpdate(keychainQuery as CFDictionary, update as CFDictionary)
-            
-            return FlutterSecureStorageResponse(status: status, value: nil)
-        } else {
-            keychainQuery[kSecValueData] = value.data(using: String.Encoding.utf8)
-            
-            let status = SecItemAdd(keychainQuery as CFDictionary, nil)
 
-            return FlutterSecureStorageResponse(status: status, value: nil)
+            let status = SecItemUpdate(keychainQuery as CFDictionary, update as CFDictionary)
+
+            if status == errSecSuccess {
+                return FlutterSecureStorageResponse(status: status, value: nil)
+            }
+
+            // Update failed, possibly due to different kSecAttrAccessible.
+            // Delete the entry and create a new one in the next step.
+            delete(key: key, groupId: groupId, accountName: accountName)
         }
-    }    
+
+        // Entry does not exist or was deleted, create a new entry.
+        keychainQuery[kSecValueData] = value.data(using: String.Encoding.utf8)
+
+        let status = SecItemAdd(keychainQuery as CFDictionary, nil)
+
+        return FlutterSecureStorageResponse(status: status, value: nil)
+    }
 }
 
 struct FlutterSecureStorageResponse {
