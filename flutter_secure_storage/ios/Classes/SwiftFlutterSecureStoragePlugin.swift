@@ -88,7 +88,7 @@ public class SwiftFlutterSecureStoragePlugin: NSObject, FlutterPlugin, FlutterSt
             return
         }
 
-        let response = flutterSecureStorageManager.read(key: values.key!, groupId: values.groupId, accountName: values.accountName, synchronizable: values.synchronizable, accessibility: values.accessibility)
+        let response = flutterSecureStorageManager.read(key: values.key!, groupId: values.groupId, accountName: values.accountName)
         handleResponse(response, result)
     }
 

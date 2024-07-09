@@ -61,18 +61,28 @@ class FlutterSecureStorage {
     }
 
     internal func containsKey(key: String, groupId: String?, accountName: String?) -> Result<Bool, OSSecError> {
-        // The accessibility and synchronisable parameters have no influence on uniqueness.
-        let keychainQuery = baseQuery(key: key, groupId: groupId, accountName: accountName, synchronizable: nil, accessibility: nil, returnData: false)
+        // The accessibility parameter has no influence on uniqueness.
+        func queryKeychain(synchronizable: Bool) -> OSStatus {
+           let keychainQuery = baseQuery(key: key, groupId: groupId, accountName: accountName, synchronizable: synchronizable, accessibility: nil, returnData: false)
+           return SecItemCopyMatching(keychainQuery as CFDictionary, nil)
+       }
 
-        let status = SecItemCopyMatching(keychainQuery as CFDictionary, nil)
-        switch status {
-        case errSecSuccess:
-            return .success(true)
-        case errSecItemNotFound:
-            return .success(false)
-        default:
-            return .failure(OSSecError(status: status))
-        }
+       let statusSynchronizable = queryKeychain(synchronizable: true)
+       if statusSynchronizable == errSecSuccess {
+           return .success(true)
+       } else if statusSynchronizable != errSecItemNotFound {
+           return .failure(OSSecError(status: statusSynchronizable))
+       }
+
+       let statusNonSynchronizable = queryKeychain(synchronizable: false)
+       switch statusNonSynchronizable {
+       case errSecSuccess:
+           return .success(true)
+       case errSecItemNotFound:
+           return .success(false)
+       default:
+           return .failure(OSSecError(status: statusNonSynchronizable))
+       }
     }
 
     internal func readAll(groupId: String?, accountName: String?, synchronizable: Bool?, accessibility: String?) -> FlutterSecureStorageResponse {
@@ -105,27 +115,34 @@ class FlutterSecureStorage {
         return FlutterSecureStorageResponse(status: status, value: results)
     }
 
-    internal func read(key: String, groupId: String?, accountName: String?, synchronizable: Bool?, accessibility: String?) -> FlutterSecureStorageResponse {
-        let keychainQuery = baseQuery(key: key, groupId: groupId, accountName: accountName, synchronizable: synchronizable, accessibility: accessibility, returnData: true)
+    internal func read(key: String, groupId: String?, accountName: String?) -> FlutterSecureStorageResponse {
+        // Function to retrieve a value considering the synchronizable parameter.
+        func readValue(synchronizable: Bool?) -> FlutterSecureStorageResponse {
+            let keychainQuery = baseQuery(key: key, groupId: groupId, accountName: accountName, synchronizable: synchronizable, accessibility: nil, returnData: true)
 
-        var ref: AnyObject?
-        let status = SecItemCopyMatching(
-            keychainQuery as CFDictionary,
-            &ref
-        )
+            var ref: AnyObject?
+            let status = SecItemCopyMatching(
+                keychainQuery as CFDictionary,
+                &ref
+            )
 
-        // Return nil if the key is not found
-        if (status == errSecItemNotFound) {
-            return FlutterSecureStorageResponse(status: errSecSuccess, value: nil)
+            // Return nil if the key is not found.
+            if status == errSecItemNotFound {
+                return FlutterSecureStorageResponse(status: errSecSuccess, value: nil)
+            }
+
+            var value: String? = nil
+
+            if status == noErr, let data = ref as? Data {
+                value = String(data: data, encoding: .utf8)
+            }
+
+            return FlutterSecureStorageResponse(status: status, value: value)
         }
 
-        var value: String? = nil
-
-        if (status == noErr) {
-            value = String(data: ref as! Data, encoding: .utf8)
-        }
-
-        return FlutterSecureStorageResponse(status: status, value: value)
+        // First, query without synchronizable, then with synchronizable if no value is found.
+        let responseWithoutSynchronizable = readValue(synchronizable: nil)
+        return responseWithoutSynchronizable.value != nil ? responseWithoutSynchronizable : readValue(synchronizable: true)
     }
 
     internal func deleteAll(groupId: String?, accountName: String?) -> FlutterSecureStorageResponse {
@@ -155,8 +172,8 @@ class FlutterSecureStorage {
     internal func write(key: String, value: String, groupId: String?, accountName: String?, synchronizable: Bool?, accessibility: String?) -> FlutterSecureStorageResponse {
         var keyExists: Bool = false
 
-        // Check if the key exists but without accessibility and synchronisable.
-        // These parameters have no effect on the uniqueness of the key.
+        // Check if the key exists but without accessibility.
+        // This parameter has no effect on the uniqueness of the key.
     	switch containsKey(key: key, groupId: groupId, accountName: accountName) {
             case .success(let exists):
                 keyExists = exists
@@ -164,7 +181,8 @@ class FlutterSecureStorage {
             case .failure(let err):
                 return FlutterSecureStorageResponse(status: err.status, value: nil)
         }
-
+        print("TEST: \(keyExists) synchronizable: \(synchronizable)")
+        //return FlutterSecureStorageResponse(status: nil, value: nil)
         var keychainQuery = baseQuery(key: key, groupId: groupId, accountName: accountName, synchronizable: synchronizable, accessibility: accessibility, returnData: nil)
 
         if (keyExists) {
