@@ -181,8 +181,7 @@ class FlutterSecureStorage {
             case .failure(let err):
                 return FlutterSecureStorageResponse(status: err.status, value: nil)
         }
-        print("TEST: \(keyExists) synchronizable: \(synchronizable)")
-        //return FlutterSecureStorageResponse(status: nil, value: nil)
+
         var keychainQuery = baseQuery(key: key, groupId: groupId, accountName: accountName, synchronizable: synchronizable, accessibility: accessibility, returnData: nil)
 
         if (keyExists) {
