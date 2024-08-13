@@ -44,10 +44,22 @@ class FlutterSecureStorageWeb extends FlutterSecureStoragePlatform {
   @override
   Future<void> deleteAll({
     required Map<String, String> options,
-  }) =>
-      Future.sync(
-        () => web.window.localStorage.clear(),
-      );
+  }) async {
+    final publicKey = options[_publicKey]!;
+    final keys = [publicKey];
+    for (int j = 0; j < web.window.localStorage.length; j++) {
+      final key = web.window.localStorage.key(j) ?? "";
+      if (!key.startsWith('$publicKey.')) {
+        continue;
+      }
+
+      keys.add(key);
+    }
+
+    for (final key in keys) {
+      web.window.localStorage.removeItem(key);
+    }
+  }
 
   /// Encrypts and saves the [key] with the given [value].
   ///
