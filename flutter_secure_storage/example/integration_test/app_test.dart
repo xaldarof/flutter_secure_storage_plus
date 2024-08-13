@@ -20,22 +20,27 @@ void main() {
     pageObject.hasRow(1);
 
     await pageObject.editRow('Row 0', 0);
+    await Future.delayed(const Duration(seconds: 3));
     await pageObject.editRow('Row 1', 1);
 
     await Future.delayed(const Duration(seconds: 3));
 
     pageObject.rowHasTitle('Row 0', 0);
+    await Future.delayed(const Duration(seconds: 3));
     pageObject.rowHasTitle('Row 1', 1);
 
     await Future.delayed(const Duration(seconds: 3));
 
     await pageObject.deleteRow(1);
+    await Future.delayed(const Duration(seconds: 3));
     pageObject.hasNoRow(1);
 
     await Future.delayed(const Duration(seconds: 3));
 
     pageObject.rowHasTitle('Row 0', 0);
+    await Future.delayed(const Duration(seconds: 3));
     await pageObject.deleteRow(0);
+    await Future.delayed(const Duration(seconds: 3));
     pageObject.hasNoRow(0);
 
     await Future.delayed(const Duration(seconds: 1));
