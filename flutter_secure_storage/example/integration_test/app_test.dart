@@ -13,8 +13,10 @@ void main() {
     pageObject.hasNoRow(0);
 
     await pageObject.addRandom();
+    await Future.delayed(const Duration(seconds: 3));
     pageObject.hasRow(0);
     await pageObject.addRandom();
+    await Future.delayed(const Duration(seconds: 3));
     pageObject.hasRow(1);
 
     await pageObject.editRow('Row 0', 0);
