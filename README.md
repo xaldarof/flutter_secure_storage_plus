@@ -117,6 +117,22 @@ Please see:
 - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
 - https://www.netsparker.com/blog/web-security/http-security-headers/
 
+#### application-specific key option
+
+On the web, all keys are stored in LocalStorage. flutter_secure_storage has an option for the web to wrap this stored key with an application-specific key to make it more difficult to analyze.
+
+```dart
+final _storage = const FlutterSecureStorage(
+  webOptions: WebOptions(
+    wrapKey: '${your_application_specific_key}',
+    wrapKeyIv: '${your_application_specific_iv}',
+  ),
+);
+```
+
+This option encrypts the key stored in LocalStorage with [WebCrypto wrapKey](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/wrapKey). It is decrypted with [WebCrypto unwrapKey](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/unwrapKey) when used.
+Generating and managing application-specific keys requires careful attention from developers. See (https://github.com/mogol/flutter_secure_storage/issues/726) for more information.
+
 ### Configure Linux Version
 
 You need `libsecret-1-dev` and `libjsoncpp-dev` on your machine to build the project, and `libsecret-1-0` and `libjsoncpp1` to run the application (add it as a dependency after packaging your app). If you using snapcraft to build the project use the following
