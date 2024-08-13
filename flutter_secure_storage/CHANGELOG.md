@@ -1,3 +1,13 @@
+## 9.2.3
+* [iOS] Fix for issue #711: The specified item already exists in the keychain.
+
+## 9.2.2
+[iOS, macOS] Fixed an issue which caused the readAll and deleteAll to not work properly.
+
+## 9.2.1
+* Fix async race condition bug in storage operations.
+* [macOS] Return nil on macOS if key is not found
+
 ## 9.2.0
 New Features:
 * [iOS, macOS] Reintroduced isProtectedDataAvailable.
@@ -6,7 +16,7 @@ New Features:
 Bugs Fixed:
 * [iOS] Return nil on iOS read if key is not found
 * [macOS] Also set kSecUseDataProtectionKeychain on read for macos.
- 
+
 ## 9.1.1
 Reverts new feature because of breaking changes.
 * [iOS, macOS] Added isProtectedDataAvailable, A boolean value that indicates whether content protection is active.

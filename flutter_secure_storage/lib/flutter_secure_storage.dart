@@ -99,7 +99,7 @@ class FlutterSecureStorage {
     WindowsOptions? wOptions,
   }) async {
     if (value == null) {
-      _platform.delete(
+      await _platform.delete(
         key: key,
         options: _selectOptions(
           iOptions,
@@ -111,7 +111,7 @@ class FlutterSecureStorage {
         ),
       );
     } else {
-      _platform.write(
+      await _platform.write(
         key: key,
         value: value,
         options: _selectOptions(
@@ -211,7 +211,7 @@ class FlutterSecureStorage {
     MacOsOptions? mOptions,
     WindowsOptions? wOptions,
   }) async {
-    _platform.delete(
+    await _platform.delete(
       key: key,
       options: _selectOptions(
         iOptions,
@@ -282,7 +282,7 @@ class FlutterSecureStorage {
     MacOsOptions? mOptions,
     WindowsOptions? wOptions,
   }) async {
-    _platform.deleteAll(
+    await _platform.deleteAll(
       options: _selectOptions(
         iOptions,
         aOptions,
@@ -344,7 +344,7 @@ class FlutterSecureStorage {
   /// macOS: https://developer.apple.com/documentation/appkit/nsapplication/3752992-isprotecteddataavailable
   Future<bool?> isCupertinoProtectedDataAvailable() async =>
       _platform is MethodChannelFlutterSecureStorage
-          ? (_platform as MethodChannelFlutterSecureStorage)
+          ? await (_platform as MethodChannelFlutterSecureStorage)
               .isCupertinoProtectedDataAvailable()
           : null;
 

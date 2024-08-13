@@ -1,11 +1,17 @@
 # flutter_secure_storage
+[![style: lint](https://img.shields.io/badge/style-lint-4BC0F5.svg)](https://pub.dev/packages/lint)
+[![pub package](https://img.shields.io/pub/v/flutter_secure_storage.svg)](https://pub.dev/packages/flutter_secure_storage)
+[![flutter_secure_storage](https://github.com/mogol/flutter_secure_storage/actions/workflows/flutter.yml/badge.svg)](https://github.com/mogol/flutter_secure_storage/actions/workflows/flutter.yml)
+[![flutter_secure_storage](https://github.com/mogol/flutter_secure_storage/actions/workflows/flutter_drive.yml/badge.svg)](https://github.com/mogol/flutter_secure_storage/actions/workflows/flutter_drive.yml)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/juliansteenbakker)](https://github.com/sponsors/juliansteenbakker)
+
 A Flutter plugin to store data in secure storage:
 
 - [Keychain](https://developer.apple.com/library/content/documentation/Security/Conceptual/keychainServConcepts/01introduction/introduction.html#//apple_ref/doc/uid/TP30000897-CH203-TP1) is used for iOS
-- AES encryption is used for Android. AES secret key is encrypted with RSA and RSA key is stored in [KeyStore](https://developer.android.com/training/articles/keystore.html).   
-  By default following algorithms are used for AES and secret key encryption: AES/CBC/PKCS7Padding and RSA/ECB/PKCS1Padding  
-  From Android 6 you can use newer, recommended algoritms:  
-  AES/GCM/NoPadding and RSA/ECB/OAEPWithSHA-256AndMGF1Padding  
+- AES encryption is used for Android. AES secret key is encrypted with RSA and RSA key is stored in [KeyStore](https://developer.android.com/training/articles/keystore.html).
+  By default following algorithms are used for AES and secret key encryption: AES/CBC/PKCS7Padding and RSA/ECB/PKCS1Padding
+  From Android 6 you can use newer, recommended algoritms:
+  AES/GCM/NoPadding and RSA/ECB/OAEPWithSHA-256AndMGF1Padding
   You can set them in Android options like so:
 ```dart
   AndroidOptions _getAndroidOptions() => const AndroidOptions(
@@ -15,7 +21,7 @@ A Flutter plugin to store data in secure storage:
 ```
 On devices running Android with version less than 6, plugin will fall back to default implementation. You can change the algorithm, even if you already have some encrypted preferences - they will be re-encrypted using selected algorithms.
 Choosing algorithm is irrelevant if you are using EncryptedSharedPreferences as described below.
-- With v5.0.0 we can use [EncryptedSharedPreferences](https://developer.android.com/topic/security/data) on Android by enabling it in the Android Options like so:
+- With v5.0.0 we can use [EncryptedSharedPreferences](https://developer.android.com/reference/androidx/security/crypto/EncryptedSharedPreferences) on Android by enabling it in the Android Options like so:
 ```dart
   AndroidOptions _getAndroidOptions() => const AndroidOptions(
   encryptedSharedPreferences: true,
@@ -56,7 +62,7 @@ If not present already, please call WidgetsFlutterBinding.ensureInitialized() in
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 // Create storage
-final storage = new FlutterSecureStorage();
+final storage = FlutterSecureStorage();
 
 // Read value
 String value = await storage.read(key: key);
@@ -116,6 +122,22 @@ Please see:
 
 - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
 - https://www.netsparker.com/blog/web-security/http-security-headers/
+
+#### application-specific key option
+
+On the web, all keys are stored in LocalStorage. flutter_secure_storage has an option for the web to wrap this stored key with an application-specific key to make it more difficult to analyze.
+
+```dart
+final _storage = const FlutterSecureStorage(
+  webOptions: WebOptions(
+    wrapKey: '${your_application_specific_key}',
+    wrapKeyIv: '${your_application_specific_iv}',
+  ),
+);
+```
+
+This option encrypts the key stored in LocalStorage with [WebCrypto wrapKey](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/wrapKey). It is decrypted with [WebCrypto unwrapKey](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/unwrapKey) when used.
+Generating and managing application-specific keys requires careful attention from developers. See (https://github.com/mogol/flutter_secure_storage/issues/726) for more information.
 
 ### Configure Linux Version
 
