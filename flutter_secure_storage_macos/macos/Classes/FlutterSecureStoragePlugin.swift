@@ -52,7 +52,7 @@ public class FlutterSecureStoragePlugin: NSObject, FlutterPlugin {
             return
         }
         
-        let response = flutterSecureStorageManager.read(key: values.key!, groupId: values.groupId, accountName: values.accountName, synchronizable: values.synchronizable, accessibility: values.accessibility)
+        let response = flutterSecureStorageManager.read(key: values.key!, groupId: values.groupId, accountName: values.accountName, synchronizable: values.synchronizable, accessibility: values.accessibility, useDataProtectionKeyChain: values.useDataProtectionKeyChain)
         handleResponse(response, result)
     }
     
@@ -73,7 +73,7 @@ public class FlutterSecureStoragePlugin: NSObject, FlutterPlugin {
             return
         }
         
-        let response = flutterSecureStorageManager.write(key: values.key!, value: values.value!, groupId: values.groupId, accountName: values.accountName, synchronizable: values.synchronizable, accessibility: values.accessibility)
+        let response = flutterSecureStorageManager.write(key: values.key!, value: values.value!, groupId: values.groupId, accountName: values.accountName, synchronizable: values.synchronizable, accessibility: values.accessibility, useDataProtectionKeyChain: values.useDataProtectionKeyChain)
         
         handleResponse(response, result)
     }
@@ -85,21 +85,21 @@ public class FlutterSecureStoragePlugin: NSObject, FlutterPlugin {
             return
         }
         
-        let response = flutterSecureStorageManager.delete(key: values.key!, groupId: values.groupId, accountName: values.accountName, synchronizable: values.synchronizable, accessibility: values.accessibility)
+        let response = flutterSecureStorageManager.delete(key: values.key!, groupId: values.groupId, accountName: values.accountName, synchronizable: values.synchronizable, accessibility: values.accessibility, useDataProtectionKeyChain: values.useDataProtectionKeyChain)
         
         handleResponse(response, result)
     }
     
     private func deleteAll(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         let values = parseCall(call)
-        let response = flutterSecureStorageManager.deleteAll(groupId: values.groupId, accountName: values.accountName, synchronizable: values.synchronizable, accessibility: values.accessibility)
+        let response = flutterSecureStorageManager.deleteAll(groupId: values.groupId, accountName: values.accountName, synchronizable: values.synchronizable, accessibility: values.accessibility, useDataProtectionKeyChain: values.useDataProtectionKeyChain)
         
         handleResponse(response, result)
     }
     
     private func readAll(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         let values = parseCall(call)
-        let response = flutterSecureStorageManager.readAll(groupId: values.groupId, accountName: values.accountName, synchronizable: values.synchronizable, accessibility: values.accessibility)
+        let response = flutterSecureStorageManager.readAll(groupId: values.groupId, accountName: values.accountName, synchronizable: values.synchronizable, accessibility: values.accessibility, useDataProtectionKeyChain: values.useDataProtectionKeyChain)
         
         handleResponse(response, result)
     }
@@ -110,7 +110,7 @@ public class FlutterSecureStoragePlugin: NSObject, FlutterPlugin {
             result(FlutterError.init(code: "Missing Parameter", message: "containsKey requires key parameter", details: nil))
         }
         
-        let response = flutterSecureStorageManager.containsKey(key: values.key!, groupId: values.groupId, accountName: values.accountName, synchronizable: values.synchronizable, accessibility: values.accessibility)
+        let response = flutterSecureStorageManager.containsKey(key: values.key!, groupId: values.groupId, accountName: values.accountName, synchronizable: values.synchronizable, accessibility: values.accessibility, useDataProtectionKeyChain: values.useDataProtectionKeyChain)
         
         switch response {
         case .success(let exists):
@@ -136,8 +136,10 @@ public class FlutterSecureStoragePlugin: NSObject, FlutterPlugin {
         let accountName = options["accountName"] as? String
         let groupId = options["groupId"] as? String
         let synchronizableString = options["synchronizable"] as? String
+        let useDataProtectionKeyChainString = options["useDataProtectionKeyChain"] as? String
         
         let synchronizable: Bool = synchronizableString != nil ? Bool(synchronizableString!)! : false
+        let useDataProtectionKeyChain: Bool = useDataProtectionKeyChainString != nil ? Bool(useDataProtectionKeyChainString!)! : true
         
         let key = arguments["key"] as? String
         let accessibility = options["accessibility"] as? String
@@ -147,8 +149,9 @@ public class FlutterSecureStoragePlugin: NSObject, FlutterPlugin {
             accountName: accountName,
             groupId: groupId,
             synchronizable: synchronizable,
-            accessibility: accessibility, 
-            key: key, 
+            useDataProtectionKeyChain: useDataProtectionKeyChain,
+            accessibility: accessibility,
+            key: key,
             value: value
         )
     }
@@ -175,7 +178,8 @@ public class FlutterSecureStoragePlugin: NSObject, FlutterPlugin {
     struct FlutterSecureStorageRequest {
         var accountName: String?
         var groupId: String?
-        var synchronizable: Bool?
+        var synchronizable: Bool
+        var useDataProtectionKeyChain: Bool
         var accessibility: String?
         var key: String?
         var value: String?
