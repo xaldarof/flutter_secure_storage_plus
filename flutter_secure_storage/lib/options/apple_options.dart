@@ -36,9 +36,24 @@ abstract class AppleOptions extends Options {
 
   static const defaultAccountName = 'flutter_secure_storage_service';
 
+  /// A key with a value that’s a string indicating the access group the item is in.
+  ///
+  /// (kSecAttrAccessGroup)
   final String? _groupId;
+
+  /// A key whose value is a string indicating the item's service.
+  ///
+  /// (kSecAttrService)
   final String? _accountName;
+
+  /// A key with a value that indicates when the keychain item is accessible.
+  /// https://developer.apple.com/documentation/security/ksecattraccessible?language=swift
+  /// (kSecAttrAccessible)
   final KeychainAccessibility? _accessibility;
+
+  /// A key with a value that’s a string indicating whether the item synchronizes through iCloud.
+  ///
+  /// (kSecAttrSynchronizable)
   final bool _synchronizable;
 
   @override
