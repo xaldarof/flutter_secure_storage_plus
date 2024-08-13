@@ -1,4 +1,10 @@
 # flutter_secure_storage
+[![style: lint](https://img.shields.io/badge/style-lint-4BC0F5.svg)](https://pub.dev/packages/lint)
+[![pub package](https://img.shields.io/pub/v/flutter_secure_storage.svg)](https://pub.dev/packages/flutter_secure_storage)
+[![flutter_secure_storage](https://github.com/mogol/flutter_secure_storage/actions/workflows/flutter.yml/badge.svg)](https://github.com/mogol/flutter_secure_storage/actions/workflows/flutter.yml)
+[![flutter_secure_storage](https://github.com/mogol/flutter_secure_storage/actions/workflows/flutter_drive.yml/badge.svg)](https://github.com/mogol/flutter_secure_storage/actions/workflows/flutter_drive.yml)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/juliansteenbakker)](https://github.com/sponsors/juliansteenbakker)
+
 A Flutter plugin to store data in secure storage:
 
 - [Keychain](https://developer.apple.com/library/content/documentation/Security/Conceptual/keychainServConcepts/01introduction/introduction.html#//apple_ref/doc/uid/TP30000897-CH203-TP1) is used for iOS
