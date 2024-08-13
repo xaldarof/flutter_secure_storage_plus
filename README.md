@@ -15,7 +15,7 @@ A Flutter plugin to store data in secure storage:
 ```
 On devices running Android with version less than 6, plugin will fall back to default implementation. You can change the algorithm, even if you already have some encrypted preferences - they will be re-encrypted using selected algorithms.
 Choosing algorithm is irrelevant if you are using EncryptedSharedPreferences as described below.
-- With v5.0.0 we can use [EncryptedSharedPreferences](https://developer.android.com/topic/security/data) on Android by enabling it in the Android Options like so:
+- With v5.0.0 we can use [EncryptedSharedPreferences](https://developer.android.com/reference/androidx/security/crypto/EncryptedSharedPreferences) on Android by enabling it in the Android Options like so:
 ```dart
   AndroidOptions _getAndroidOptions() => const AndroidOptions(
   encryptedSharedPreferences: true,
