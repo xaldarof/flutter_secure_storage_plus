@@ -1,21 +1,31 @@
 library flutter_secure_storage;
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/models/key_value_pair.dart';
 import 'package:flutter_secure_storage/test/test_flutter_secure_storage_platform.dart';
 import 'package:flutter_secure_storage_platform_interface/flutter_secure_storage_platform_interface.dart';
 
 part './options/android_options.dart';
+
 part './options/apple_options.dart';
+
 part './options/ios_options.dart';
+
 part './options/linux_options.dart';
+
 part './options/macos_options.dart';
+
 part './options/web_options.dart';
+
 part './options/windows_options.dart';
 
 final Map<String, List<ValueChanged<String?>>> _listeners = {};
+final StreamController<KeyValuePair> _streamController =
+    StreamController<KeyValuePair>.broadcast();
 
 class FlutterSecureStorage {
   final IOSOptions iOptions;
@@ -39,6 +49,14 @@ class FlutterSecureStorage {
   FlutterSecureStoragePlatform get _platform =>
       FlutterSecureStoragePlatform.instance;
 
+  Stream<KeyValuePair> listenSet({required Set<String> keys}) async* {
+    assert(keys.isNotEmpty);
+    await for (final event in _streamController.stream) {
+      if (keys.contains(event.key)) {
+        yield event;
+      }
+    }
+  }
   ///Register [listener] for [key] with the [value] injected for the listener.
   ///The [listener] will still be called when you delete the [key] with the injected [value] as null.
   ///This listener will be added to the list of registered listeners for that [key].
@@ -233,6 +251,7 @@ class FlutterSecureStorage {
     }
 
     for (final listener in listenersForKey) {
+      _streamController.add(KeyValuePair(key, value));
       listener(value);
     }
   }
