@@ -130,7 +130,7 @@ key: key, value: value, iOptions: options);
 
 ### SecureStorageView
 
-```
+```dart
 class Example extends State {
   @override
   Widget build(BuildContext context) {
