@@ -49,6 +49,30 @@ class FlutterSecureStorage {
   FlutterSecureStoragePlatform get _platform =>
       FlutterSecureStoragePlatform.instance;
 
+  Stream<KeyValuePair> get stream => _streamController.stream;
+
+  /// Listens for events from the stream where the event's key is in the specified [keys] set.
+  ///
+  /// This method returns a stream of [KeyValuePair] events. The stream will only yield events
+  /// where the event's key matches one of the keys in the provided [keys] set.
+  ///
+  /// The [keys] parameter must not be empty. If [keys] is empty, an assertion error will be thrown.
+  ///
+  /// Example:
+  /// ```dart
+  /// final stream = StreamController<KeyValuePair>();
+  /// final listener = listenSet(keys: {'key1', 'key2'});
+  ///
+  /// listener.listen((event) {
+  ///   print('Received event: ${event.key}, ${event.value}');
+  /// });
+  ///
+  /// // To add events to the stream:
+  /// stream.add(KeyValuePair(key: 'key1', value: 'value1'));
+  /// stream.add(KeyValuePair(key: 'key3', value: 'value3')); // Will not be yielded
+  /// ```
+  ///
+  /// The method will continue to listen and yield matching events as long as the stream is active.
   Stream<KeyValuePair> listenSet({required Set<String> keys}) async* {
     assert(keys.isNotEmpty);
     await for (final event in _streamController.stream) {
@@ -57,6 +81,7 @@ class FlutterSecureStorage {
       }
     }
   }
+
   ///Register [listener] for [key] with the [value] injected for the listener.
   ///The [listener] will still be called when you delete the [key] with the injected [value] as null.
   ///This listener will be added to the list of registered listeners for that [key].
