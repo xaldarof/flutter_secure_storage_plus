@@ -61,9 +61,9 @@ class FlutterSecureStorage {
   /// Example:
   /// ```dart
   /// final stream = StreamController<KeyValuePair>();
-  /// final listener = listenSet(keys: {'key1', 'key2'});
+  /// final observer = observeSet(keys: {'key1', 'key2'});
   ///
-  /// listener.listen((event) {
+  /// observer.listen((event) {
   ///   print('Received event: ${event.key}, ${event.value}');
   /// });
   ///
@@ -73,7 +73,7 @@ class FlutterSecureStorage {
   /// ```
   ///
   /// The method will continue to listen and yield matching events as long as the stream is active.
-  Stream<KeyValuePair> listenSet({required Set<String> keys}) async* {
+  Stream<KeyValuePair> observeSet({required Set<String> keys}) async* {
     assert(keys.isNotEmpty);
     await for (final event in _streamController.stream) {
       if (keys.contains(event.key)) {

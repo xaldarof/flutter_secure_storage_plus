@@ -79,6 +79,11 @@ await storage.deleteAll();
 // Write value
 await storage.write(key: key, value: value);
 
+storage.observeSet({
+  "token","name","locale"
+}).listen(keyValuePair) {
+  print("Key ${keyValuePair.key}  Value ${keyValuePair.value}");
+}
 ```
 
 This allows us to be able to fetch secure values while the app is backgrounded, by specifying first_unlock or first_unlock_this_device. The default if not specified is unlocked.
