@@ -15,7 +15,7 @@ class SecureStorageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: flutterSecureStorage.listenSet(keys: keys),
+      stream: flutterSecureStorage.observeSet(keys: keys),
       builder: (BuildContext context, AsyncSnapshot<KeyValuePair> snapshot) {
         return builder(flutterSecureStorage, snapshot.data);
       },
